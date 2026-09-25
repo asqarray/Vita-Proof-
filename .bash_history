@@ -579,4 +579,35 @@ cd /root/vitaproof-gateway
 git remote set-url origin https://asqarray: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@github.com/asqarray/Vita-Proof-.git
 # 3. Push to GitHub
 git push -u origin main
-mkdir -p /root/vitaproof-gateway && cd /root/vitaproof-gateway && git init && git config user.name "Youssef Asqarray" && git config user.email "youssef2asq@gmail.com" && git branch -M main && cp -r /home/youssef2asq/* . 2>/dev/null || true && git remote add origin https://asqarray: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@github.com/asqarray/Vita-Proof-.git && git add . && git commit -m "
+mkdir -p /root/vitaproof-gateway && cd /root/vitaproof-gateway && git init && git config user.name "Youssef Asqarray" && git config user.email "youssef2asq@gmail.com" && git branch -M main && cp -r /home/youssef2asq/* . 2>/dev/null || true && git remote add origin https://asqarray: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@github.com/asqarray/Vita-Proof-.git && git add . && git commit -m "# 1. Clean out the broken/full git history in the current folder
+rm -rf .git
+# 2. Clear out heavy cache directories in your home folder to free up space
+rm -rf ~/.cache ~/.npm /tmp/* ~/.docker
+# 3. Verify that you now have free space (look for Avail > 1G)
+df -h
+# 4. Re-initialize Git cleanly right here
+git init
+git config user.name "Youssef Asqarray"
+git config user.email "youssef2asq@gmail.com"
+git branch -M main
+# 5. Add remote with your token, stage, commit, and push
+git remote add origin https://asqarray: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@github.com/asqarray/Vita-Proof-.git
+git add .
+git commit -m "feat: launch vitaproof.io landing page with verified live benchmarks and scaling architecture"
+git push -u origin main
+# 1. Log in securely via the GitHub CLI tool
+gh auth login
+gh repo sync
+git push -u origin main --force
+# 1. Clear any cached git credentials causing the 403
+git credential-cache exit 2>/dev/null || true
+# 2. Tell git to use the GitHub CLI helper for authentication
+gh auth setup-git
+# 3. Force push your code now
+git push -u origin main --force
+# 1. Reset the remote URL to a clean state (without tokens)
+git remote set-url origin https://github.com/asqarray/Vita-Proof-.git
+# 2. Ensure GitHub CLI is handling your credentials
+gh auth setup-git
+# 3. Force push your code
+git push -u origin main --force
