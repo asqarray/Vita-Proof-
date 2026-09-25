@@ -1,0 +1,22 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install gcc to compile the C engine
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Compile the shared library natively inside the container
+RUN gcc -shared -fPIC -O3 -mavx2 core/engine.c -o vitaproof_core.so
+
+ENV PORT=8080
+EXPOSE 8080
+
+CMD ["python", "attest_daemon.py"]

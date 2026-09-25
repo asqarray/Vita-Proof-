@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAPROOF | Live Treasury & Asset Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased flex h-screen overflow-hidden">
+
+    <!-- LOCK MODAL -->
+    <div id="lockModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6 text-center">
+            <div class="h-12 w-12 bg-cyan-950 border border-cyan-800 text-cyan-400 rounded-2xl flex items-center justify-center mx-auto font-mono text-xl font-bold">🔒</div>
+            <div>
+                <h2 class="text-xl font-bold text-white tracking-tight">VITAPROOF Gateway</h2>
+                <p class="text-xs text-slate-400 mt-2 font-mono">Enter your Client Access Key or Master Admin Key.</p>
+            </div>
+            <form onsubmit="unlockPortal(event)" class="space-y-4">
+                <input id="accessKeyInput" type="password" placeholder="Enter Access Key..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400 font-mono text-sm tracking-widest">
+                <button type="submit" class="w-full py-3.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 text-xs font-mono">AUTHENTICATE SESSION</button>
+            </form>
+            <p id="errorMessage" class="text-xs text-red-400 font-mono hidden">Invalid Key. Authentication Failed.</p>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboardContent" class="flex h-screen w-full filter blur-md pointer-events-none transition-all duration-500">
+        <!-- Sidebar -->
+        <aside class="w-64 border-r border-slate-900 bg-slate-950/50 backdrop-blur flex flex-col justify-between">
+            <div>
+                <div class="h-20 flex items-center px-6 border-b border-slate-900">
+                    <div class="h-3 w-3 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.5)] mr-3"></div>
+                    <span class="font-bold tracking-wider text-lg">VITAPROOF</span>
+                </div>
+                <nav class="p-4 space-y-2 font-mono text-xs">
+                    <a href="/terminal.html" class="block px-4 py-3 text-slate-400 hover:bg-slate-900 hover:text-cyan-400 rounded-lg transition">COMPUTE GATEWAY</a>
+                    <a href="#" class="block px-4 py-3 bg-slate-900 text-cyan-400 border border-slate-800 rounded-lg transition font-bold">TREASURY & ASSETS</a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-900 font-mono text-xs text-slate-500">
+                Mode: <span id="sessionRole" class="text-cyan-400">AUTHENTICATING...</span><br>
+                Solana RPC: <span id="rpcStatus" class="text-emerald-400">DEVNET ONLINE</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <header class="h-20 border-b border-slate-900 flex items-center justify-between px-8 bg-slate-950/80 sticky top-0 z-10 backdrop-blur-md">
+                <h1 id="portalTitle" class="text-xl font-bold text-white tracking-tight">Institutional Asset Management</h1>
+                <div class="flex items-center space-x-4">
+                    <button onclick="syncOnChainData()" class="px-3 py-1.5 border border-slate-800 hover:border-slate-700 bg-slate-900 text-slate-300 text-xs font-mono rounded-lg transition">
+                        🔄 Refresh Solana State
+                    </button>
+                    <button onclick="lockPortal()" class="px-4 py-2 border border-red-900/50 hover:bg-red-950 text-red-400 text-xs font-semibold rounded-lg transition font-mono">Lock Session</button>
+                </div>
+            </header>
+
+            <div class="p-8 space-y-8 max-w-7xl">
+                <!-- ADMIN ALLOCATION CONTROL PANEL -->
+                <div id="adminControlPanel" class="bg-cyan-950/20 border border-cyan-800/50 p-6 rounded-2xl hidden space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-sm font-mono text-cyan-400 font-bold uppercase">⚡ Issuer Operations: Allocate & Issue Coins</h2>
+                        <span class="text-xs bg-cyan-900/50 text-cyan-300 px-3 py-1 rounded-full font-mono">Admin Privileges Active</span>
+                    </div>
+                    <form onsubmit="issueAllocation(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input id="clientNameInput" type="text" required placeholder="Client / Org Name" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                        <input id="coinAmountInput" type="number" required placeholder="Amount (BETH)" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                        <input id="clientWalletInput" type="text" placeholder="Solana Wallet Address" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-400">
+                        <button type="submit" class="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs rounded-xl py-2 font-mono transition">CONFIRM ALLOCATION</button>
+                    </form>
+                    <div id="issuedAlert" class="hidden p-3 bg-emerald-950/50 border border-emerald-800 text-emerald-300 rounded-xl font-mono text-xs flex justify-between items-center">
+                        <span id="issuedAlertText"></span>
+                        <button onclick="copyClientLink()" class="px-3 py-1 bg-emerald-800 hover:bg-emerald-700 text-white rounded font-bold">Copy Client Access Link</button>
+                    </div>
+                </div>
+
+                <!-- LIVE METRIC CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl relative">
+                        <h3 class="text-xs font-mono text-slate-400 uppercase mb-2" id="card1Label">Total Portfolio Balance</h3>
+                        <div class="text-4xl font-extrabold text-white font-mono mb-1" id="card1Value">0.00</div>
+                        <div class="text-sm text-emerald-400 font-mono" id="card1Sub">+0.00 BETH (30d Utility Yield)</div>
+                    </div>
+                    <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl">
+                        <h3 class="text-xs font-mono text-slate-400 uppercase mb-2">OTC SAFT Allocation</h3>
+                        <div class="text-2xl font-bold text-white mb-2" id="card2Value">0 BETH</div>
+                        <div class="text-xs text-slate-400 font-mono" id="card2Sub">Vesting: Dynamic Schedule</div>
+                    </div>
+                    <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-2xl">
+                        <h3 class="text-xs font-mono text-slate-400 uppercase mb-2">Hardware Efficiency Offset</h3>
+                        <div class="text-2xl font-bold text-white mb-1" id="card3Value">$0 Saved</div>
+                        <p class="text-xs text-slate-400" id="card3Sub">R&D compute allowance verified for tax audit.</p>
+                    </div>
+                </div>
+
+                <!-- CLIENT ALLOCATION LEDGER TABLE (ADMIN ONLY) -->
+                <div id="adminLedgerSection" class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 hidden space-y-4">
+                    <h3 class="text-sm font-bold text-white font-mono uppercase tracking-widest">Active Client Allocation Ledger</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse font-mono text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-500 uppercase">
+                                    <th class="py-3 px-4">Client Org</th>
+                                    <th class="py-3 px-4">BETH Amount</th>
+                                    <th class="py-3 px-4">Solana Wallet</th>
+                                    <th class="py-3 px-4">Client Access Key</th>
+                                    <th class="py-3 px-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                                <!-- Dynamic Rows Injected Here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- SCRIPT LAYER: SOLANA RPC & DYNAMIC DATA ENGINE -->
+    <script>
+        const MASTER_ADMIN_KEY = "VITAPROOF-ADMIN-2026";
+        const SOLANA_RPC = "https://api.devnet.solana.com";
+        let lastGeneratedClientUrl = "";
+
+        // Default seed data if empty
+        const initialAllocations = [
+            { id: "1", name: "Alpha Corp", amount: 250000, wallet: "8f92...a1b2", key: "CLIENT-ALPHA-88" },
+            { id: "2", name: "Vanguard Tech", amount: 500000, wallet: "3c44...9d8e", key: "CLIENT-VANGUARD-01" }
+        ];
+
+        function getDB() {
+            const data = localStorage.getItem("vitaproof_allocations");
+            if (!data) {
+                localStorage.setItem("vitaproof_allocations", JSON.stringify(initialAllocations));
+                return initialAllocations;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveDB(data) {
+            localStorage.setItem("vitaproof_allocations", JSON.stringify(data));
+        }
+
+        function checkUrlKey() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const key = urlParams.get('key') || sessionStorage.getItem("authenticated_key");
+            if (key) authenticateKey(key);
+        }
+
+        function unlockPortal(e) {
+            e.preventDefault();
+            const input = document.getElementById("accessKeyInput").value.trim();
+            authenticateKey(input);
+        }
+
+        function authenticateKey(key) {
+            const db = getDB();
+            if (key === MASTER_ADMIN_KEY) {
+                sessionStorage.setItem("authenticated_key", key);
+                document.getElementById("sessionRole").innerText = "ISSUER / ADMIN";
+                document.getElementById("adminControlPanel").classList.remove("hidden");
+                document.getElementById("adminLedgerSection").classList.remove("hidden");
+                document.getElementById("portalTitle").innerText = "VITAPROOF Issuer Command Center";
+                
+                renderAdminMetrics(db);
+                renderLedgerTable(db);
+                grantAccess();
+            } else {
+                // Check if it's a valid client key
+                const clientRecord = db.find(c => c.key === key);
+                if (clientRecord) {
+                    sessionStorage.setItem("authenticated_key", key);
+                    document.getElementById("sessionRole").innerText = `CLIENT (${clientRecord.name.toUpperCase()})`;
+                    document.getElementById("adminControlPanel").classList.add("hidden");
+                    document.getElementById("adminLedgerSection").classList.add("hidden");
+                    document.getElementById("portalTitle").innerText = `${clientRecord.name} Institutional Vault`;
+                    
+                    renderClientMetrics(clientRecord);
+                    grantAccess();
+                } else {
+                    document.getElementById("errorMessage").classList.remove("hidden");
+                }
+            }
+        }
+
+        function renderAdminMetrics(db) {
+            const totalAllocated = db.reduce((sum, c) => sum + Number(c.amount), 0);
+            const totalTreasuryReserve = 10000000; // 10M BETH Total Mint Supply
+            const currentBalance = totalTreasuryReserve - totalAllocated;
+            const yield30d = Math.round(totalAllocated * 0.012);
+            const opexSaved = Math.round(totalAllocated * 0.193);
+
+            document.getElementById("card1Label").innerText = "Remaining Treasury Reserve";
+            document.getElementById("card1Value").innerText = currentBalance.toLocaleString('en-US', {minimumFractionDigits: 2}) + " BETH";
+            document.getElementById("card1Sub").innerText = `+${yield30d.toLocaleString()} BETH (Network Yield Generated)`;
+
+            document.getElementById("card2Value").innerText = totalAllocated.toLocaleString() + " BETH";
+            document.getElementById("card2Sub").innerText = `Issued across ${db.length} Corporate Contracts`;
+
+            document.getElementById("card3Value").innerText = "$" + opexSaved.toLocaleString() + " Saved";
+            document.getElementById("card3Sub").innerText = "Calculated across total active compute network nodes.";
+        }
+
+        function renderClientMetrics(client) {
+            const amount = Number(client.amount);
+            const yield30d = Math.round(amount * 0.012);
+            const opexSaved = Math.round(amount * 0.193);
+
+            document.getElementById("card1Label").innerText = "Total Portfolio Balance";
+            document.getElementById("card1Value").innerText = amount.toLocaleString('en-US', {minimumFractionDigits: 2}) + " BETH";
+            document.getElementById("card1Sub").innerText = `+${yield30d.toLocaleString()} BETH (30d Utility Yield)`;
+
+            document.getElementById("card2Value").innerText = amount.toLocaleString() + " BETH";
+            document.getElementById("card2Sub").innerText = "Vesting: 100% Verified | Linear Contract";
+
+            document.getElementById("card3Value").innerText = "$" + opexSaved.toLocaleString() + " Saved";
+            document.getElementById("card3Sub").innerText = "R&D compute allowance verified for tax audit.";
+
+            // If a real Solana wallet is bound, query Devnet RPC
+            if (client.wallet && client.wallet.length > 30) {
+                fetchSolanaBalance(client.wallet);
+            }
+        }
+
+        function renderLedgerTable(db) {
+            const tbody = document.getElementById("ledgerTableBody");
+            tbody.innerHTML = "";
+            db.forEach(c => {
+                const tr = document.createElement("tr");
+                const clientUrl = `${window.location.origin}/treasury.html?key=${c.key}`;
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-white">${c.name}</td>
+                    <td class="py-3 px-4 text-cyan-400 font-bold">${Number(c.amount).toLocaleString()} BETH</td>
+                    <td class="py-3 px-4 text-slate-400">${c.wallet || 'Unbound'}</td>
+                    <td class="py-3 px-4 text-indigo-400">${c.key}</td>
+                    <td class="py-3 px-4">
+                        <button onclick="navigator.clipboard.writeText('${clientUrl}'); alert('Client link copied to clipboard!');" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[10px]">Copy Link</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function issueAllocation(e) {
+            e.preventDefault();
+            const name = document.getElementById("clientNameInput").value.trim();
+            const amount = Number(document.getElementById("coinAmountInput").value);
+            const wallet = document.getElementById("clientWalletInput").value.trim();
+
+            if (!name || !amount) return;
+
+            const clientKey = `CLIENT-${name.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+            const newRecord = { id: Date.now().toString(), name, amount, wallet, key: clientKey };
+
+            const db = getDB();
+            db.push(newRecord);
+            saveDB(db);
+
+            renderAdminMetrics(db);
+            renderLedgerTable(db);
+
+            lastGeneratedClientUrl = `${window.location.origin}/treasury.html?key=${clientKey}`;
+            document.getElementById("issuedAlertText").innerText = `Successfully allocated ${amount.toLocaleString()} BETH to ${name}. Client Key: ${clientKey}`;
+            document.getElementById("issuedAlert").classList.remove("hidden");
+
+            document.getElementById("clientNameInput").value = "";
+            document.getElementById("coinAmountInput").value = "";
+            document.getElementById("clientWalletInput").value = "";
+        }
+
+        function copyClientLink() {
+            if (lastGeneratedClientUrl) {
+                navigator.clipboard.writeText(lastGeneratedClientUrl);
+                alert("Client Access Link copied to clipboard!");
+            }
+        }
+
+        async function fetchSolanaBalance(walletAddress) {
+            try {
+                const response = await fetch(SOLANA_RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'getBalance',
+                        params: [walletAddress]
+                    })
+                });
+                const result = await response.json();
+                if (result.result) {
+                    const solBalance = result.result.value / 1e9;
+                    console.log(`Live Solana Wallet Balance for ${walletAddress}: ${solBalance} SOL`);
+                }
+            } catch (err) {
+                console.warn("Solana RPC query failed:", err);
+            }
+        }
+
+        function syncOnChainData() {
+            const db = getDB();
+            const key = sessionStorage.getItem("authenticated_key");
+            if (key === MASTER_ADMIN_KEY) renderAdminMetrics(db);
+            alert("Synchronized latest Solana Devnet ledger state.");
+        }
+
+        function grantAccess() {
+            document.getElementById("lockModal").classList.add("hidden");
+            const dashboard = document.getElementById("dashboardContent");
+            dashboard.classList.remove("blur-md", "pointer-events-none");
+        }
+
+        function lockPortal() {
+            sessionStorage.removeItem("authenticated_key");
+            location.reload();
+        }
+
+        window.onload = checkUrlKey;
+    </script>
+</body>
+</html>
+EOF

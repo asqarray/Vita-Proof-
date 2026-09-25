@@ -1,0 +1,30 @@
+FROM python:3.11-slim
+
+# Install GCC compiler for native AVX2 C engine compilation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install runtime Python packages
+RUN pip install --no-cache-dir \
+    fastapi \
+    uvicorn \
+    pydantic \
+    solders \
+    solana \
+    google-cloud-secret-manager \
+    google-cloud-firestore
+
+COPY . /app
+
+# Compile native hardware C shared library
+RUN gcc -O3 -mavx2 -shared -fPIC -o vitaproof_core.so core/engine.c || \
+    gcc -O3 -shared -fPIC -o vitaproof_core.so core/engine.c
+
+EXPOSE 8080
+
+# Execute server directly via uvicorn
+CMD ["uvicorn", "attest_daemon:app", "--host", "0.0.0.0", "--port", "8080"]

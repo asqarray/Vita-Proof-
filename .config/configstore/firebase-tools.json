@@ -1,0 +1,69 @@
+{
+	"motd": {
+		"cloudBuildErrorAfter": 1594252800000,
+		"cloudBuildWarnAfter": 1590019200000,
+		"defaultNode10After": 1594252800000,
+		"minVersion": "3.0.5",
+		"node8DeploysDisabledAfter": 1613390400000,
+		"node8RuntimeDisabledAfter": 1615809600000,
+		"node8WarnAfter": 1600128000000,
+		"fetched": 1789641865020
+	},
+	"gemini": true,
+	"usage": true,
+	"analytics-uuid": "7e8c734f-6591-42f6-916f-30b30f6b6a71",
+	"activeProjects": {
+		"/home/youssef2asq/vitaproof-gateway": "default",
+		"/home/youssef2asq": "vitaproof-gateway"
+	},
+	"user": {
+		"iss": "accounts.google.com",
+		"azp": "563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com",
+		"aud": "563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com",
+		"sub": "113944132264583168519",
+		"email": "youssef2asq@gmail.com",
+		"email_verified": true,
+		"at_hash": "muaYhcPfhbX2LZptHiXz0A",
+		"iat": 1788973673,
+		"exp": 1788977273
+	},
+	"tokens": {
+		"expires_at": 1789645463860,
+		"refresh_token": "1//03gBSxZgSlW8ECgYIARAAGAMSNwF-L9IrZvqMMjSmMDgrKJPFiKHka6GUEpNq5bT5G2HMV4A7CT_LBlcOYutkNaoTobVaG18aibY",
+		"scopes": [],
+		"access_token": "ya29.a0AdMD6Eiswond6q0aCgROhPDXonmnvxQg0tgD-pT32Pe1eUAyL96SwllCSB2y6ZueWL66x-9hjjI_cYDYAz2ac5AacVmX93WmZjUBae--aHYdkiWlbyQ3_jb1TlOuKJTxZ4ptqzTfHLDUKegHZ2FFCvr7koRB4PtjCvA1ITJcXCUGAxLuFWuj4-Ep6Nk_1OC2XIviKlUHOXtoOAaCgYKAf4SARISFQHGX2MiAp8G2Cd4m1hzNpRqsA6yTw0213",
+		"expires_in": 3599,
+		"scope": "https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/cloud-platform openid",
+		"token_type": "Bearer",
+		"id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImYxMGY4NzQwNWE5NzljMWRmMzZkZjI2NjA2NzM0ZjMzY2Q4NWMyNzEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNTYzNTg0MzM1ODY5LWZncmhnbWQ0N2JxbmVraWo1aThiNXByMDNobzg0OWU2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNTYzNTg0MzM1ODY5LWZncmhnbWQ0N2JxbmVraWo1aThiNXByMDNobzg0OWU2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEzOTQ0MTMyMjY0NTgzMTY4NTE5IiwiZW1haWwiOiJ5b3Vzc2VmMmFzcUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6InlsOV9VZlJpRVowU1ljemtiaERiM1EiLCJpYXQiOjE3ODk2NDE4NjQsImV4cCI6MTc4OTY0NTQ2NH0.u8NYxBwd6Tpeea0oZ3R8f800BRU-JlFJP8NT9NxBKMuWIgFiZokQr2WlU6_1crgOmjY5bggpGGy8EmelqdC63QUP3J5MjY5qq3G08_xl8ZRt_zn2V9hycWD7pbG08eOw8Fbm4fbwa51AOnE2ALwkSrYhvNXo3-Vi9M8BNB87y6HZdIg2au7PAelWfpMt0hsKzVMdo0-GD8OlmOtzfqGFhoPIK7UessY-PSHhe7-_Y8s26mJiz93n73KTBP0GN0zlehUx805ySNVeuUw__NtFJZkq1nzbs75ayIYlannVjHIhKlV2APDzlJ2Z3dnLR5kIb46KNXIgl-xaraFVaayvzA"
+	},
+	"loginScopes": [
+		"email",
+		"openid",
+		"https://www.googleapis.com/auth/cloudplatformprojects.readonly",
+		"https://www.googleapis.com/auth/firebase",
+		"https://www.googleapis.com/auth/cloud-platform"
+	],
+	"apiEnablementCache": {
+		"vitaproof-gateway": {
+			"runtimeconfig.googleapis.com": true,
+			"cloudfunctions.googleapis.com": true,
+			"cloudbilling.googleapis.com": true,
+			"firebaseapphosting.googleapis.com": true,
+			"cloudbuild.googleapis.com": true,
+			"secretmanager.googleapis.com": true,
+			"artifactregistry.googleapis.com": true,
+			"iam.googleapis.com": true,
+			"run.googleapis.com": true,
+			"developerconnect.googleapis.com": true,
+			"cloudresourcemanager.googleapis.com": true,
+			"firebaseextensions.googleapis.com": true
+		},
+		"869469225283": {
+			"pubsub.googleapis.com": true,
+			"storage.googleapis.com": true,
+			"run.googleapis.com": true,
+			"eventarc.googleapis.com": true
+		}
+	}
+}

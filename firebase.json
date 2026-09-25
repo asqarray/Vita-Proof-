@@ -1,0 +1,26 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/health",
+        "run": {
+          "serviceId": "vitaproof-gateway",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "vitaproof-gateway",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}

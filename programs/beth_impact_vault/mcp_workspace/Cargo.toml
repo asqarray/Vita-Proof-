@@ -1,0 +1,19 @@
+[package]
+name = "beth_impact_vault"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "beth_impact_vault"
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+# Downgrading solana-program to align with the v1.16.x toolchain in the build container.
+solana-program = "1.16.25"
+borsh = "0.9.3"
+array-bytes = "1.4.1"
+# Pinning zeroize to an older version (=1.3.0) to avoid a transitive
+# dependency on a newer `zeroize_derive` that requires an unsupported Rust edition.
+# The `zeroize_derive` feature transitively includes the correct derive macro version,
+# so an explicit dependency on `zeroize_derive` is not needed and causes resolution errors.
+zeroize = { version = "=1.3.0", features = ["zeroize_derive"] }

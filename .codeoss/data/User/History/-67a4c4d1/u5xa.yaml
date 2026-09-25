@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: VITAPROOF Institutional Settlement Gateway
+  version: 1.0.0
+  description: >
+    High-performance, off-chain settlement compliance and state-collapse pre-verification 
+    engine powered by native C11/AVX2 vectorization. Designed for HFT and proprietary trading desks.
+servers:
+  - url: https://vitaproof-gateway-869469225283.us-central1.run.app
+    description: Production Cloud Run Environment
+paths:
+  /v1/settle:
+    post:
+      summary: Execute Sub-Millisecond Settlement Pre-Verification
+      description: Runs state-collapse logic via native `libwinterstar.so` to pre-verify institutional settlement payloads.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender
+                - recipient
+properties:
+  sender:
+    type: string
+    example: "0xPropAlpha"
+    description: Originating trading desk or vault address.
+  recipient:
+    type: string
+    example: "0xHFTVault"
+    description: Destination counterparty or settlement address.
+      responses:
+        '200':
+          description: Settlement pre-verified successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "Settlement pre-verified successfully via native engine."
+                  fingerprint:
+                    type: string
+                    example: "d188d9cfc4cecfd88890889ad2e9c6c5dfceebc6dac2cb888688d8cfc9c3dac3"
+                  duration_us:
+                    type: integer
+                    example: 42
+  /health/live:
+    get:
+      summary: Liveness Probe
+      responses:
+        '200':
+          description: Service is running.
+  /health/ready:
+    get:
+      summary: Readiness Probe
+      description: Verifies memory bridge and native engine availability.
+      responses:
+        '200':
+          description: Native engine loaded and ready.

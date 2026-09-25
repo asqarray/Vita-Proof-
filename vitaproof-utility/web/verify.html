@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAPROOF — Green Compute Verification Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Inter", sans-serif; }
+        .code-font { font-family: "Fira Code", monospace; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xl font-bold tracking-tight text-white">VITAPROOF <span class="text-emerald-400 font-light">Gateway</span></span>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <span id="gateway-status" class="px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Checking Gateway...</span>
+                <span class="text-slate-400">Network: <strong class="text-slate-200">Solana Devnet (Squads v4)</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-10 w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Panel: Ingestion Control -->
+        <div class="lg:col-span-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-white mb-2">Telemetry Ingestion</h2>
+                <p class="text-sm text-slate-400 mb-6">Submit new compute state-collapse payloads through the authenticated FastAPI pipeline.</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">API Key</label>
+                        <input id="api-key" type="password" value="vp_secure_dev_key_2026" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Certificate ID</label>
+                        <input id="cert-id" type="text" value="ESG-VP-CLIENT-01" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">State Hash (SHA-256)</label>
+                        <input id="state-hash" type="text" value="c7746a183faf1bbe3fe87b3999be671dd8d827a56049a142dd4806e6bba18453" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 code-font text-xs focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">CPU Cycles</label>
+                        <input id="cpu-cycles" type="number" value="341016" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="submitTelemetry()" class="mt-8 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-lg transition duration-200 shadow-lg shadow-emerald-900/20 cursor-pointer">
+                Ingest & Verify Telemetry
+            </button>
+        </div>
+
+        <!-- Right Panel: Verification & Live Proofs -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Live Status Card -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h2 class="text-lg font-semibold text-white mb-2">On-Chain Anchor Verification</h2>
+                <p class="text-sm text-slate-400 mb-4">Inspect the latest anchored transaction signature secured via Squads v4 Multisig.</p>
+                
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>LATEST ANCHOR SIGNATURE</span>
+                        <span class="text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-900/50">Verified</span>
+                    </div>
+                    <div class="code-font text-xs text-slate-300 break-all bg-slate-900 p-3 rounded border border-slate-800">
+                        512eW5D8wkUsvgCrHo3DLEhWZU1PTQTDyeScrqFNYEDrdJ26B78JueS1c6c93kmvFrJ2wBFbpxv2tPn24RBkQtSb
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-slate-500 pt-2 border-t border-slate-900">
+                        <span>Governance: Squads v4 PDA</span>
+                        <a href="https://explorer.solana.com/tx/512eW5D8wkUsvgCrHo3DLEhWZU1PTQTDyeScrqFNYEDrdJ26B78JueS1c6c93kmvFrJ2wBFbpxv2tPn24RBkQtSb?cluster=devnet" target="_blank" class="text-emerald-400 hover:underline flex items-center space-x-1">
+                            <span>View on Solana Explorer &rarr;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Response Console -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col h-64">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">Gateway Response Console</h3>
+                    <button onclick="clearConsole()" class="text-xs text-slate-500 hover:text-slate-300">Clear</button>
+                </div>
+                <div id="console-output" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-4 code-font text-xs text-emerald-400 overflow-y-auto whitespace-pre-wrap">
+// System initialized. Ready for telemetry ingestion requests...
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        VITAPROOF Enterprise Green Compute Protocol &bull; Observer Potential Framework ({34,35} / {54,55})
+    </footer>
+
+    <script>
+        const GATEWAY_BASE = "http://127.0.0.1:8080";
+
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${GATEWAY_BASE}/health`);
+                const data = await res.json();
+                const badge = document.getElementById("gateway-status");
+                if (data.status === "healthy") {
+                    badge.textContent = "Gateway Online";
+                    badge.className = "px-3 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800";
+                }
+            } catch (err) {
+                const badge = document.getElementById("gateway-status");
+                badge.textContent = "Gateway Offline";
+                badge.className = "px-3 py-1 rounded-full bg-rose-950 text-rose-400 border border-rose-800";
+            }
+        }
+
+        async function submitTelemetry() {
+            const apiKey = document.getElementById("api-key").value;
+            const certId = document.getElementById("cert-id").value;
+            const stateHash = document.getElementById("state-hash").value;
+            const cpuCycles = parseInt(document.getElementById("cpu-cycles").value);
+
+            const payload = {
+                cert_id: certId,
+                state_hash: stateHash,
+                cpu_cycles: cpuCycles
+            };
+
+            const consoleBox = document.getElementById("console-output");
+            consoleBox.textContent += `\n[POST] Sending ingestion request for ${certId}...\n`;
+
+            try {
+                const res = await fetch(`${GATEWAY_BASE}/ingest`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-API-Key": apiKey
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                consoleBox.textContent += `[Response ${res.status}]: ${JSON.stringify(data, null, 2)}\n`;
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            } catch (err) {
+                consoleBox.textContent += `[Error]: Failed to connect to gateway -> ${err.message}\n`;
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            }
+        }
+
+        function clearConsole() {
+            document.getElementById("console-output").textContent = "// Console cleared.\n";
+        }
+
+        checkHealth();
+    </script>
+</body>
+</html>

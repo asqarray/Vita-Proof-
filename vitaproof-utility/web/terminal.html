@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAPROOF // Hardware Execution Terminal</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --card: #111827;
+            --border: #1f2937;
+            --green: #10b981;
+            --cyan: #06b6d4;
+            --text: #f3f4f6;
+            --text-dim: #9ca3af;
+        }
+        body {
+            font-family: monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .container { max-width: 900px; width: 100%; }
+        .header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
+        .header h1 { color: #fff; font-size: 1.4rem; margin: 0; letter-spacing: 1px; }
+        .btn {
+            background: var(--green);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-family: monospace;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+        .btn:hover { opacity: 0.9; }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+        .card-title { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 1rem; }
+        pre { background: #030712; padding: 1rem; border-radius: 4px; border: 1px solid #111827; overflow-x: auto; color: var(--cyan); margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VITAPROOF // HARDWARE DISPATCH TERMINAL</h1>
+            <p style="color: var(--text-dim); margin: 4px 0 0 0; font-size: 0.85rem;">AVX2 SIMD Compute & On-Chain Audit Pipeline</p>
+        </div>
+
+        <button class="btn" onclick="dispatchJob()">Dispatch Compute Job</button>
+
+        <div class="card">
+            <div class="card-title">Solana Devnet Audit Telemetry</div>
+            <pre id="output">Click "Dispatch Compute Job" to execute kernel...</pre>
+        </div>
+    </div>
+
+    <script>
+        const GATEWAY_URL = "https://vitaproof-gateway-869469225283.us-central1.run.app/api/v1/verify";
+
+        async function dispatchJob() {
+            const out = document.getElementById("output");
+            out.innerText = "Dispatching binary payload to Cloud Run gateway...";
+
+            try {
+                const res = await fetch(GATEWAY_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ dispatch_type: "SIMD_BENCHMARK", timestamp: Date.now() })
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP Error ${res.status}: ${res.statusText}`);
+                }
+
+                const data = await res.json();
+                out.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                out.innerText = `Execution Failed: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

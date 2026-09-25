@@ -1,0 +1,47 @@
+FROM ubuntu:22.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y \
+    curl \
+    bzip2 \
+    libssl-dev \
+    libudev-dev \
+    pkg-config \
+    build-essential \
+    git \
+    clang \
+    cmake \
+    libclang-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:$PATH"
+
+RUN sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+ENV PATH="/root/.local/share/solana/install/active_release/bin:$PATH"
+
+WORKDIR /app
+COPY . .
+
+# Pre-install platform tools with retry fallback before triggering compilation
+RUN cargo-build-sbf --install-only || cargo-build-sbf --install-only
+RUN cargo-build-sbf --manifest-path programs/vitaproof_settlement/Cargo.toml
+
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY *.py ./
+COPY core/ ./core/
+COPY --from=builder /app/target/deploy/vitaproof_settlement.so ./programs/
+
+EXPOSE 8000
+
+CMD ["python", "attest_daemon.py"]

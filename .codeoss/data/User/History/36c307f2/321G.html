@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITAPROOF | Institutional Compute & Audit Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="h-3 w-3 bg-cyan-400 rounded-full animate-pulse"></div>
+                <span class="font-bold tracking-wider text-lg">VITAPROOF<span class="text-cyan-400 font-light">CORE</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="wallet-badge" class="px-3 py-1 bg-slate-900 border border-slate-700 text-xs font-mono rounded-full text-slate-400">Wallet: Disconnected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-cyan-400 font-mono">
+                    <span>QUICKNODE + GCP SECURE ENCLAVE ACTIVE</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                    Institutional Compute & <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Cryptographic Auditing</span>.
+                </h1>
+                <p class="text-slate-400 max-w-xl">
+                    High-performance non-Euclidean state-collapse execution engines integrated directly with tamper-proof Solana mainnet/devnet audit proofs.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <button id="connect-btn" onclick="connectWallet()" class="px-6 py-3 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-semibold rounded transition shadow-lg shadow-cyan-500/20 cursor-pointer">
+                        Connect Phantom Wallet
+                    </button>
+                    <button id="dispatch-btn" onclick="dispatchComputeWithSIWS()" disabled class="px-6 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        Dispatch SIWS Workload
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live Telemetry Card -->
+            <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-xl p-6 shadow-2xl backdrop-blur space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-mono text-xs text-slate-400 uppercase tracking-wider">AVX2 SIMD Telemetry Stream</h3>
+                    <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                </div>
+                <div class="relative h-48">
+                    <canvas id="throughputChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Output / Audit Logs -->
+        <div class="mt-12 bg-slate-900/40 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-mono text-xs text-slate-400 uppercase tracking-wider mb-4">On-Chain Audit Stream & Execution Proofs</h3>
+            <pre id="output" class="bg-slate-950 p-4 rounded-lg font-mono text-xs text-cyan-400 overflow-x-auto border border-slate-800/80">Connect Phantom wallet and execute SIWS authorization to initiate telemetry stream...</pre>
+        </div>
+    </main>
+
+    <footer class="mt-20 border-t border-slate-900 py-8 text-center text-xs text-slate-600 font-mono">
+        &copy; 2026 VITAPROOF INFRASTRUCTURE SYSTEMS. ALL RIGHTS RESERVED.
+    </footer>
+
+    <script>
+        let userPublicKey = null;
+
+        const ctx = document.getElementById('throughputChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Throughput (GFLOPS)',
+                    data: [],
+                    borderColor: '#00ffcc',
+                    backgroundColor: 'rgba(0, 255, 204, 0.05)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { family: 'monospace', size: 10 } } },
+                    y: { min: 330, max: 360, grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { family: 'monospace', size: 10 } } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        async function connectWallet() {
+            if ('solana' in window && window.solana.isPhantom) {
+                try {
+                    const resp = await window.solana.connect();
+                    userPublicKey = resp.publicKey.toString();
+                    const badge = document.getElementById('wallet-badge');
+                    badge.innerText = `Wallet: ${userPublicKey.slice(0, 4)}...${userPublicKey.slice(-4)}`;
+                    badge.className = "px-3 py-1 bg-cyan-950 border border-cyan-800 text-xs font-mono rounded-full text-cyan-300";
+                    
+                    const connectBtn = document.getElementById('connect-btn');
+                    connectBtn.innerText = 'Authenticated';
+                    connectBtn.disabled = true;
+                    
+                    document.getElementById('dispatch-btn').disabled = false;
+                    document.getElementById('output').innerText = 'Institutional wallet connected. Ready for SIWS challenge dispatch.';
+                } catch (err) {
+                    alert('Wallet connection rejected: ' + err.message);
+                }
+            } else {
+                alert('Phantom wallet extension not detected.');
+            }
+        }
+
+        async function dispatchComputeWithSIWS() {
+            const outputEl = document.getElementById('output');
+            outputEl.innerText = 'Step 1/2: Prompting institutional wallet for SIWS cryptographic signature...';
+
+            try {
+                const timestamp = Date.now();
+                const messageText = `VITAPROOF GATEWAY SIWS AUTHENTICATION\nPublicKey: ${userPublicKey}\nTimestamp: ${timestamp}`;
+                const encodedMessage = new TextEncoder().encode(messageText);
+
+                const signedMessage = await window.solana.signMessage(encodedMessage, 'utf8');
+                const signatureHex = Array.from(signedMessage.signature).map(b => b.toString(16).padStart(2, '0')).join('');
+
+                outputEl.innerText = 'Step 2/2: Executing AVX2 SIMD workload & anchoring proof via QuickNode...';
+
+                const res = await fetch('/api/v1/compute/dispatch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jobType: 'AVX2_SIMD_NON_EUCLIDEAN_BENCHMARK',
+                        siws: { publicKey: userPublicKey, signature: signatureHex, timestamp }
+                    })
+                });
+
+                const data = await res.json();
+                outputEl.innerText = JSON.stringify(data, null, 2);
+
+                if (data.status === 'SUCCESS' && data.telemetry) {
+                    const gflops = parseFloat(data.telemetry.throughput);
+                    const timeLabel = new Date().toLocaleTimeString();
+
+                    if (chart.data.labels.length >= 10) {
+                        chart.data.labels.shift();
+                        chart.data.datasets[0].data.shift();
+                    }
+
+                    chart.data.labels.push(timeLabel);
+                    chart.data.datasets[0].data.push(gflops);
+                    chart.update();
+                }
+            } catch (err) {
+                outputEl.innerText = 'Execution Failed: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

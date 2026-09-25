@@ -1,0 +1,20 @@
+{
+  "network_id": "beth-son-alpha-1",
+  "status": "SELF_CONFIGURING",
+  "nodes": {
+    "discovery_agent": {
+      "role": "Eyes",
+      "status": "active"
+    },
+    "destruction_agent": {
+      "role": "Hands",
+      "status": "active"
+    },
+    "mcp_build_plane": {
+      "role": "Execution Sandbox",
+      "status": "active"
+    }
+  },
+  "telemetry": [],
+  "optimization_history": []
+}

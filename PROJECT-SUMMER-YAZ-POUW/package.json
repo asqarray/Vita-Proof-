@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "@google-cloud/kms": "^6.1.0",
+    "@solana/spl-token": "^0.4.15",
+    "@solana/web3.js": "^1.99.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.3",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "start": "node EXACT_PATH_TO_YOUR_FILE.js",
+    "build": "mkdir -p dist && cp -r scripts/* dist/ 2>/dev/null || cp *.js dist/ 2>/dev/null || true"
+  }
+}

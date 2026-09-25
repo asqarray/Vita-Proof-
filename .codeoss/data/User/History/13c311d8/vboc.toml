@@ -1,0 +1,19 @@
+[toolchain]
+
+[features]
+seeds = true
+skip-lint = false
+
+[programs.devnet]
+beth_impact_vault = "9ujspCNYmJH68J1pGPhwbGRgxQg5fdWSDW2WzbwMs7QL"
+vitaproof_settlement = "8vAqWh4uXDexhW3BJSot2Dwunb945bZiXuQUwWR6kAm5"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

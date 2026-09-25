@@ -1,0 +1,27 @@
+{
+  "name": "vitaproof-gateway",
+  "version": "1.0.0",
+  "description": "Vitaproof Backend Gateway",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+"dependencies": {
+    "@grpc/grpc-js": "^1.14.5",
+    "@grpc/proto-loader": "^0.8.1",
+    "@solana/wallet-adapter-base": "^0.9.28",
+    "@solana/wallet-adapter-react": "^0.15.40",
+    "@solana/wallet-adapter-react-ui": "^0.9.40",
+    "@solana/wallet-adapter-wallets": "^0.19.39",
+    "@solana/web3.js": "^1.99.0",
+    "@sqds/multisig": "^2.1.4",
+    "clsx": "^2.1.1",
+    "express": "^4.22.3",
+    "lucide-react": "^1.47.0",
+    "node-addon-api": "^8.9.2",
+    "node-gyp": "^13.0.2",
+    "redis": "^6.2.1",
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0"
+  }
+}

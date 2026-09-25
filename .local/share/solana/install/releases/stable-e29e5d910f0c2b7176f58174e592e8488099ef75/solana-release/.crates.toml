@@ -1,0 +1,6 @@
+[v1]
+"cargo-build-sbf 4.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = [
+    "cargo-build-sbf",
+    "cargo-test-sbf",
+]
+"spl-token-cli 5.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = ["spl-token"]

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VITAPROOF Gateway | SIWS Telemetry</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --accent: #00ffcc;
+      --accent-dim: rgba(0, 255, 204, 0.1);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 15px var(--accent-dim);
+    }
+    .header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .status-badge {
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #1e293b;
+      border: 1px solid var(--text-muted);
+    }
+    .status-badge.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 10px 18px;
+      font-weight: bold;
+      font-family: inherit;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .chart-container {
+      position: relative;
+      height: 250px;
+      margin-top: 15px;
+    }
+    pre {
+      background: #05070c;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      border: 1px solid #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header-flex">
+        <h1>VITAPROOF Gateway Terminal</h1>
+        <span id="wallet-badge" class="status-badge">Wallet: Disconnected</span>
+      </div>
+      <div class="btn-group">
+        <button id="connect-btn" onclick="connectWallet()">Connect Phantom</button>
+        <button id="dispatch-btn" onclick="dispatchComputeWithSIWS()" disabled>Dispatch (SIWS Verified)</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>AVX2 SIMD Compute Throughput (GFLOPS)</h3>
+      <div class="chart-container">
+        <canvas id="throughputChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Solana Devnet Audit Telemetry</h3>
+      <pre id="output">Connect Phantom wallet to authorize execution signatures...</pre>
+    </div>
+  </div>
+
+  <script>
+    let userPublicKey = null;
+
+    const ctx = document.getElementById('throughputChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Throughput (GFLOPS)',
+          data: [],
+          borderColor: '#00ffcc',
+          backgroundColor: 'rgba(0, 255, 204, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+          y: { min: 300, max: 360, grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+        },
+        plugins: { legend: { labels: { color: '#e2e8f0' } } }
+      }
+    });
+
+    async function connectWallet() {
+      if ('solana' in window && window.solana.isPhantom) {
+        try {
+          const resp = await window.solana.connect();
+          userPublicKey = resp.publicKey.toString();
+          document.getElementById('wallet-badge').innerText = `Wallet: ${userPublicKey.slice(0, 4)}...${userPublicKey.slice(-4)}`;
+          document.getElementById('wallet-badge').classList.add('active');
+          document.getElementById('connect-btn').innerText = 'Connected';
+          document.getElementById('connect-btn').disabled = true;
+          document.getElementById('dispatch-btn').disabled = false;
+          document.getElementById('output').innerText = 'Wallet authenticated. Ready to dispatch SIMD workloads.';
+        } catch (err) {
+          alert('Wallet connection rejected: ' + err.message);
+        }
+      } else {
+        alert('Phantom wallet extension not detected.');
+      }
+    }
+
+    async function dispatchComputeWithSIWS() {
+      const outputEl = document.getElementById('output');
+      outputEl.innerText = 'Step 1/2: Requesting SIWS signature...';
+
+      try {
+        const timestamp = Date.now();
+        const messageText = `VITAPROOF GATEWAY SIWS AUTHENTICATION\nPublicKey: ${userPublicKey}\nTimestamp: ${timestamp}`;
+        const encodedMessage = new TextEncoder().encode(messageText);
+
+        const signedMessage = await window.solana.signMessage(encodedMessage, 'utf8');
+        const signatureHex = Array.from(signedMessage.signature).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        outputEl.innerText = 'Step 2/2: Executing AVX2 SIMD workload & anchoring Solana audit proof...';
+
+        const res = await fetch('/api/v1/compute/dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jobType: 'AVX2_SIMD_NON_EUCLIDEAN_BENCHMARK',
+            siws: { publicKey: userPublicKey, signature: signatureHex, timestamp }
+          })
+        });
+
+        const data = await res.json();
+        outputEl.innerText = JSON.stringify(data, null, 2);
+
+        if (data.status === 'SUCCESS' && data.telemetry) {
+          const gflops = parseFloat(data.telemetry.throughput);
+          const timeLabel = new Date().toLocaleTimeString();
+
+          if (chart.data.labels.length >= 10) {
+            chart.data.labels.shift();
+            chart.data.datasets[0].data.shift();
+          }
+
+          chart.data.labels.push(timeLabel);
+          chart.data.datasets[0].data.push(gflops);
+          chart.update();
+        }
+      } catch (err) {
+        outputEl.innerText = 'Execution Failed: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

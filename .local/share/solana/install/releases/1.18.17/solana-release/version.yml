@@ -1,0 +1,3 @@
+channel: v1.18.17
+commit: c027cfc3e09a7e3e44af07c680a581f8ac4d2ced
+target: x86_64-unknown-linux-gnu
