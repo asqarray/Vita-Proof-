@@ -4,13 +4,18 @@ members = [
 ]
 resolver = "2"
 
-[workspace.package]
-version = "0.1.0"
-description = "VITAPROOF Sovereign Infrastructure Anchor Workspace"
-edition = "2021"
+[patch.crates-io]
+aes-gcm-siv = { path = "./vendor/aes-gcm-siv" }
+ahash = { path = "./vendor/ahash" }
+anchor-syn = { path = "./vendor/anchor-syn" }
+blake3 = { path = "./vendor/blake3" }
+borsh = { path = "./vendor/borsh" }
+indexmap = { path = "./vendor/indexmap" }
+jobserver = { path = "./vendor/jobserver" }
+proc-macro2 = { version = "=1.0.89", path = "./vendor/proc-macro2" }
+unicode-segmentation = { path = "./vendor/unicode-segmentation" }
+zeroize_derive = { path = "./vendor/zeroize_derive" }
 
 [profile.release]
 overflow-checks = true
-lto = "fat"
-codegen-units = 1
-opt-level = "z"
+opt-level = 3

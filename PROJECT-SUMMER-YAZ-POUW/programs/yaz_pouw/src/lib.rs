@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 
-declare_id!("JCcfFs62rn73GwNmXDouYxtrTpuiM397TCLVLjvKrH2u");
+declare_id!("289usBJxwz5BS59htWCXP4xjY8gNXoLWUvNbr6r32NBU");
 
 #[program]
 pub mod yaz_pouw {

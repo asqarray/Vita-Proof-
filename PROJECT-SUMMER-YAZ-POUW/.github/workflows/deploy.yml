@@ -1,0 +1,17 @@
+name: Anchor Build & Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Solana
+        run: sh -c "$(curl -sSfL https://release.solana.com/v1.18.0/install)"
+      - name: Install Anchor
+        run: cargo install --git https://github.com/coral-xyz/anchor avm --locked --force && avm install latest && avm use latest
+      - name: Build Smart Contract
+        run: anchor build

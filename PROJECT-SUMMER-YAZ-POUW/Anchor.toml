@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-yaz_pouw = "JCcfFs62rn73GwNmXDouYxtrTpuiM397TCLVLjvKrH2u"
+yaz_pouw = "289usBJxwz5BS59htWCXP4xjY8gNXoLWUvNbr6r32NBU"
 
 [registry]
 url = "https://api.apr.dev"

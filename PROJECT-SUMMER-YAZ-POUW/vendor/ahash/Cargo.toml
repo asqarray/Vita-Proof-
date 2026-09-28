@@ -1,0 +1,15 @@
+[package]
+name = "ahash"
+version = "0.8.12"
+edition = "2021"
+
+[features]
+default = ["std"]
+std = []
+compile-time-rng = []
+getrandom = []
+nightly-arm-aes = []
+no-rng = []
+serde = []
+use-rng = []
+unstable-const-fn = []
